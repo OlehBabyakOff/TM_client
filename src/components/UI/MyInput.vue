@@ -1,5 +1,5 @@
 <template>
-  <input type="text" :value="modelValue" @input="updateValue">
+  <input type="text" :value="modelValue" @input="updateValue" :placeholder="placeholder">
 </template>
 
 <script>
@@ -7,6 +7,7 @@
     name: "MyInput",
     props: {
       modelValue: [String, Number],
+      placeholder: [String, Number]
     },
     methods: {
       updateValue(event) {

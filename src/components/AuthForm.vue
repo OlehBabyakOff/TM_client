@@ -1,8 +1,8 @@
 <template>
   <form @submit.prevent>
     <h2>{{formName}}</h2>
-    <MyInput v-model="email"/>
-    <MyInput v-model="password"/>
+    <MyInput v-model="email" placeholder="Email"/>
+    <MyInput v-model="password" placeholder="Password"/>
     <MyButton @click="auth">{{formName}}</MyButton>
   </form>
 </template>
@@ -24,6 +24,9 @@ export default {
   methods: {
     auth() {
       this.$emit('auth', this.email, this.password);
+      this.clearFields();
+    },
+    clearFields() {
       this.email = '';
       this.password = '';
     }

@@ -15,12 +15,17 @@ export default createStore({
     }
   },
   actions: {
-    signIn({commit}, data) {
-      postAuth('login', data)
-          .then(response => {
-            commit('setAuth', true);
-            commit('setUser', response?.data?.user?.user);
-          })
+    async signIn({commit}, data) {
+      const res = await postAuth('login', data);
+      commit('setAuth', true);
+      commit('setUser', res?.data?.user?.user);
+      return res;
+    },
+    async signOut({commit}) {
+      const res = await postAuth('logout');
+      commit('setAuth', false);
+      commit('setUser', null);
+      return res;
     }
   }
 })

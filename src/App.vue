@@ -1,5 +1,5 @@
 <template>
-  <Navbar/>
+  <Navbar v-if="$store.state.isAuth"/>
   <MDBContainer>
     <router-view/>
   </MDBContainer>

@@ -29,18 +29,20 @@ export default {
       signIn: 'signIn'
     }),
     login(email, password) {
-      const ss = this.signIn({email, password});
-      console.log(ss)
-          // .then(response => {
-          //   this.message = response.data.message;
-          //   this.status = response.status;
-          //   this.showAlert = true;
-          // })
-          // .catch(error => {
-          //   this.message = error.response.data;
-          //   this.status = error.response.status;
-          //   this.showAlert = true;
-          // });
+      this.signIn({email, password})
+          .then(response => {
+            this.message = response.data.message;
+            this.status = response.status;
+            this.showAlert = true;
+          })
+          .catch(error => {
+            this.message = error.response.data;
+            this.status = error.response.status;
+            this.showAlert = true;
+          });
+    },
+    closeAlert() {
+      this.showAlert = false;
     }
   }
 }
