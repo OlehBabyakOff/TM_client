@@ -3,7 +3,7 @@
     <h2>{{formName}}</h2>
     <MyInput v-model="email" placeholder="Email"/>
     <MyInput v-model="password" placeholder="Password"/>
-    <MyButton @click="auth">{{formName}}</MyButton>
+    <MyButton class="btn_form" @click="auth">{{formName}}</MyButton>
   </form>
 </template>
 
@@ -36,5 +36,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .btn_form {
+    margin-top: 15px;
+  }
 </style>

@@ -25,11 +25,13 @@ export default {
     padding: 20px;
     background-color: #2fb986;
     color: white;
+    margin-top: 15px;
   }
   .error {
     padding: 20px;
     background-color: #f44336;
     color: white;
+    margin-top: 15px;
   }
   .close_btn {
     margin-left: 15px;

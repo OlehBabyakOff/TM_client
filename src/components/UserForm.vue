@@ -4,7 +4,7 @@
   <MyInput v-model="lastName" placeholder="Last name"/>
   <MyInput v-model="email" placeholder="Email"/>
   <MyInput v-model="phoneNumber" placeholder="Phone number"/>
-  <MyButton @click="saveUser">Save User</MyButton>
+  <MyButton class="btn_form" @click="saveUser">Save User</MyButton>
 </template>
 
 <script>
@@ -49,5 +49,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .btn_form {
+    margin-top: 15px;
+  }
 </style>

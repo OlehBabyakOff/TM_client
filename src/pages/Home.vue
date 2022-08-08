@@ -3,9 +3,20 @@
            :message="message"
            :status="status"
            @closeAlert="closeAlert"/>
-  <UserItem :users="users"
+
+  <div class="list">
+    <MyInput v-model="search"
+             placeholder="Search by name..."/>
+    <MySelect v-model="sort"
+              :options="sortOptions"/>
+  </div>
+
+  <UserItem :users="sortAndSearch"
             @deleteUser="deleteUser"/>
-  <MyButton @click="openModal">Create User</MyButton>
+
+  <div class="list">
+    <MyButton @click="openModal">Create User</MyButton>
+  </div>
 
   <div class="pagination">
     <MyButton :class="this.currentPage === page ? 'current' : null"
@@ -14,17 +25,15 @@
               @click="changePage(page)">{{page}}</MyButton>
   </div>
 
-
-
   <MyModal v-if="showModal"
            @hideModal="closeModal">
-    <UserForm text="Add to database"
-        @saveUser="saveUser"/>
+  <UserForm text="Add to database"
+            @saveUser="saveUser"/>
   </MyModal>
 </template>
 
 <script>
-import UserItem from "@/components/UserItem";
+import UserItem from "@/components/UserList";
 import UserForm from "@/components/UserForm";
 import {getUsersService, saveUserService, deleteUserService} from "@/api/user";
 
@@ -35,11 +44,21 @@ export default {
       users: [],
       totalPages: 0,
       currentPage: 1,
-      limit: 1,
+      limit: 5,
       showModal: false,
       showAlert: false,
       message: '',
       status: '',
+      search: '',
+      sort: '',
+      sortOptions: [
+        {value: 'firstName', name: 'First name'},
+        {value: 'lastName', name: 'Last name'},
+        {value: 'email', name: 'Email'},
+        {value: 'phoneNumber', name: 'Phone number'},
+        {value: 'eventCount', name: 'Event count'},
+        {value: 'nextEventDate', name: 'Next event date'},
+      ],
     }
   },
   methods: {
@@ -48,6 +67,9 @@ export default {
     },
     closeModal() {
       this.showModal = false;
+    },
+    closeAlert() {
+      this.showAlert = false;
     },
     fillTable() {
       getUsersService(`users?page=${this.currentPage}&limit=${this.limit}`)
@@ -86,9 +108,6 @@ export default {
             this.showAlert = true;
           });
     },
-    closeAlert() {
-      this.showAlert = false;
-    },
     changePage(page) {
       this.currentPage = page;
       this.fillTable();
@@ -96,6 +115,16 @@ export default {
   },
   mounted() {
     this.fillTable();
+  },
+  computed: {
+    sortUsers() {
+      return [...this.users].sort((prev, next) => {
+        return prev[this.sort]?.localeCompare(next[this.sort]);
+      });
+    },
+    sortAndSearch() {
+      return this.sortUsers.filter(user => user.firstName.includes(this.search));
+    }
   },
   components: {
     UserItem,
@@ -105,18 +134,21 @@ export default {
 </script>
 
 <style scoped>
-.pagination {
-  display: inline-block;
-}
-
-.current {
-  color: red;
-}
-
-.pagination a {
-  color: black;
-  float: left;
-  padding: 8px 16px;
-  text-decoration: none;
-}
+  .pagination {
+    display: inline-block;
+  }
+  .current {
+    color: black;
+  }
+  .pagination a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+  }
+  .list {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+  }
 </style>

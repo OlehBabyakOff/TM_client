@@ -18,8 +18,8 @@
       <td>{{user.lastName}}</td>
       <td>{{user.email}}</td>
       <td>{{user.phoneNumber}}</td>
-      <td>{{user.eventCount || 'empty'}}</td>
-      <td>{{user.nextEvent || 'empty'}}</td>
+      <td>{{user.events.length || 'empty'}}</td>
+      <td>{{'empty'}}</td>
       <td><MyButton @click="deleteUser(user._id)">Delete user</MyButton></td>
     </tr>
     </tbody>

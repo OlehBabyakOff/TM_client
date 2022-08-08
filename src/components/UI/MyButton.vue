@@ -16,6 +16,5 @@ export default {
     background: none;
     color: teal;
     border: 1px solid grey;
-    margin-top: 10px;
   }
 </style>
