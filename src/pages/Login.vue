@@ -34,6 +34,7 @@ export default {
             this.message = response.data.message;
             this.status = response.status;
             this.showAlert = true;
+            this.$router.push('/');
           })
           .catch(error => {
             this.message = error.response.data;
@@ -43,6 +44,11 @@ export default {
     },
     closeAlert() {
       this.showAlert = false;
+    }
+  },
+  beforeCreate() {
+    if (this.$store.state.isAuth == true) {
+      this.$router.push('/');
     }
   }
 }

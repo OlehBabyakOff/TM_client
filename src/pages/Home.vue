@@ -1,35 +1,38 @@
 <template>
-  <MyAlert v-if="showAlert"
-           :message="message"
-           :status="status"
-           @closeAlert="closeAlert"/>
+  <div v-if="loaded">
+    <MyAlert v-if="showAlert"
+             :message="message"
+             :status="status"
+             @closeAlert="closeAlert"/>
 
-  <div class="list">
-    <MyInput v-model="search"
-             placeholder="Search by name..."/>
-    <MySelect v-model="sort"
-              :options="sortOptions"/>
+    <div class="list">
+      <MyInput v-model="search"
+               placeholder="Search by name..."/>
+      <MySelect v-model="sort"
+                :options="sortOptions"/>
+    </div>
+
+    <UserItem :users="sortAndSearch"
+              @deleteUser="deleteUser"/>
+
+    <div class="list">
+      <MyButton @click="openModal">Create User</MyButton>
+    </div>
+
+    <div class="pagination">
+      <MyButton :class="this.currentPage === page ? 'current' : null"
+                v-for="page in totalPages"
+                :key="page"
+                @click="changePage(page)">{{page}}</MyButton>
+    </div>
+
+    <MyModal v-if="showModal"
+             @hideModal="closeModal">
+      <UserForm text="Add to database"
+                @saveUser="saveUser"/>
+    </MyModal>
   </div>
-
-  <UserItem :users="sortAndSearch"
-            @deleteUser="deleteUser"/>
-
-  <div class="list">
-    <MyButton @click="openModal">Create User</MyButton>
-  </div>
-
-  <div class="pagination">
-    <MyButton :class="this.currentPage === page ? 'current' : null"
-              v-for="page in totalPages"
-              :key="page"
-              @click="changePage(page)">{{page}}</MyButton>
-  </div>
-
-  <MyModal v-if="showModal"
-           @hideModal="closeModal">
-  <UserForm text="Add to database"
-            @saveUser="saveUser"/>
-  </MyModal>
+  <MySpinner v-else/>
 </template>
 
 <script>
@@ -42,6 +45,7 @@ export default {
   data() {
     return {
       users: [],
+      loaded: false,
       totalPages: 0,
       currentPage: 1,
       limit: 5,
@@ -77,6 +81,7 @@ export default {
             this.users = response.data.users;
             this.totalPages = response.data.total;
             this.currentPage = response.data.current;
+            this.loaded = true;
           });
     },
     saveUser(firstName, lastName, email, phoneNumber) {
@@ -111,6 +116,11 @@ export default {
     changePage(page) {
       this.currentPage = page;
       this.fillTable();
+    }
+  },
+  beforeCreate() {
+    if (this.$store.state.isAuth != true) {
+      this.$router.push('/login');
     }
   },
   mounted() {

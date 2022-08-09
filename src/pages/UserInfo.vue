@@ -1,43 +1,60 @@
 <template>
-  <MyAlert v-if="showAlert"
-           :message="message"
-           :status="status"
-           @closeAlert="closeAlert"/>
+  <div v-if="loaded">
+    <MyAlert v-if="showAlert"
+             :message="message"
+             :status="status"
+             @closeAlert="closeAlert"/>
 
-  <div class="card" v-if="loaded">
-    <div class="container">
-      <h4><b>{{fullName}}</b></h4>
-      <p>{{user.email}}</p>
-      <p>{{user.phoneNumber}}</p>
-
-      <MyButton @click="openUser">Edit user</MyButton>
-      <MyButton class="btn_list"><router-link to="/">Back</router-link></MyButton>
+    <div class="card">
+      <div class="container">
+        <h4><b>Full name:</b> {{fullName}}</h4>
+        <p><b>Email: </b> {{user.email}}</p>
+        <p><b>Phone number: </b> {{user.phoneNumber}}</p>
+        <MyButton @click="openUser">Edit user</MyButton>
+        <MyButton class="btn_list"><router-link to="/" style="color: teal">Back</router-link></MyButton>
+      </div>
     </div>
+
+    <div class="list">
+      <MyInput v-model="search"
+               placeholder="Search by title..."/>
+      <MySelect v-model="sort"
+                :options="sortOptions"/>
+    </div>
+
+    <EventList :events="sortAndSearch"
+               @deleteEvent="deleteEvent"/>
+
+    <div class="list">
+      <MyButton @click="openEvent">Create Event</MyButton>
+    </div>
+
+    <div class="pagination">
+      <MyButton :class="this.currentPage === page ? 'current' : null"
+                v-for="page in totalPages"
+                :key="page"
+                @click="changePage(page)">{{page}}</MyButton>
+    </div>
+
+    <MyModal v-if="showModal"
+             @hideModal="closeModal">
+      <UserForm v-if="showUserForm"
+                text="Edit user"
+                :user="user"
+                @saveUser="editUser"/>
+      <EventForm v-else-if="showEventForm"
+                 text="Add event"
+                 @saveEvent="addEvent"/>
+
+    </MyModal>
   </div>
-
-  <EventList :events="events"/>
-
-  <div class="list">
-    <MyButton @click="openEvent">Create Event</MyButton>
-  </div>
-
-  <MyModal v-if="showModal"
-           @hideModal="closeModal">
-    <UserForm v-if="showUserForm"
-              text="Edit user"
-              :user="user"
-              @saveUser="editUser"/>
-    <EventForm v-else-if="showEventForm"
-               text="Add event"
-               @saveEvent="addEvent"/>
-
-  </MyModal>
+  <MySpinner v-else/>
 </template>
 
 <script>
 import UserForm from "@/components/UserForm";
 import {getUserService, updateUserService} from "@/api/user";
-import {addEventService, getEventsService} from "@/api/event";
+import {addEventService, getEventsService, deleteEventService} from "@/api/event";
 import EventList from "@/components/EventList";
 import EventForm from "@/components/EventForm";
 
@@ -47,13 +64,24 @@ export default {
     return {
       user: null,
       events: [],
+      totalPages: 0,
+      currentPage: 1,
+      limit: 5,
       loaded: false,
       showModal: false,
       showAlert: false,
       message: '',
       status: '',
       showUserForm: false,
-      showEventForm: false
+      showEventForm: false,
+      search: '',
+      sort: '',
+      sortOptions: [
+        {value: 'title', name: 'Title'},
+        {value: 'description', name: 'Description'},
+        {value: 'startDate', name: 'Start date'},
+        {value: 'endDate', name: 'End date'}
+      ],
     }
   },
   methods: {
@@ -81,8 +109,10 @@ export default {
     },
     async getEvents() {
       const id = this.$route.params.id;
-      const fetchedEvents = await getEventsService(`${id}/events`);
-      this.events = fetchedEvents.data;
+      const fetchedEvents = await getEventsService(`${id}/events?page=${this.currentPage}&limit=${this.limit}`);
+      this.events = fetchedEvents.data.events;
+      this.totalPages = fetchedEvents.data.total;
+      this.currentPage = fetchedEvents.data.current;
     },
     editUser(firstName, lastName, email, phoneNumber) {
       this.closeModal();
@@ -114,6 +144,30 @@ export default {
             this.status = error.response.status;
             this.showAlert = true;
           });
+    },
+    deleteEvent(eventId) {
+      const userId = this.$route.params.id;
+      deleteEventService(`${userId}/event/${eventId}`)
+          .then(response => {
+            this.getEvents();
+            this.message = response.data.message;
+            this.status = response.status;
+            this.showAlert = true;
+          })
+          .catch(error => {
+            this.message = error.response.data;
+            this.status = error.response.status;
+            this.showAlert = true;
+          });
+    },
+    changePage(page) {
+      this.currentPage = page;
+      this.getEvents();
+    }
+  },
+  beforeCreate() {
+    if (this.$store.state.isAuth != true) {
+      this.$router.push('/login');
     }
   },
   mounted() {
@@ -123,12 +177,20 @@ export default {
   computed: {
     fullName () {
       return `${this.user.firstName} ${this.user.lastName}`;
+    },
+    sortEvents() {
+      return [...this.events].sort((prev, next) => {
+        return prev[this.sort]?.localeCompare(next[this.sort]);
+      });
+    },
+    sortAndSearch() {
+      return this.sortEvents.filter(event => event.title.includes(this.search));
     }
   },
   components: {
     EventForm,
-    EventList,
-    UserForm
+    UserForm,
+    EventList
   }
 }
 </script>
@@ -148,6 +210,18 @@ export default {
   }
   .btn_list {
     margin: 0 15px;
+  }
+  .pagination {
+    display: inline-block;
+  }
+  .current {
+    color: black;
+  }
+  .pagination a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
   }
   .list {
     display: flex;
