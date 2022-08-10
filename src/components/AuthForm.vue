@@ -1,10 +1,18 @@
 <template>
-  <form @submit.prevent>
-    <h2>{{formName}}</h2>
-    <MyInput v-model="email" placeholder="Email"/>
-    <MyInput v-model="password" placeholder="Password"/>
-    <MyButton class="btn_form" @click="auth">{{formName}}</MyButton>
-  </form>
+  <div class='window'>
+    <div class='overlay'></div>
+    <div class='content'>
+      <form @submit.prevent>
+        <div class='welcome'>{{ formName }}</div>
+        <div class='input-fields'>
+          <MyInput class='input-line full-width' type="email" v-model="email" placeholder="Email"/>
+          <MyInput class='input-line full-width' type="password" v-model="password" placeholder="Password"/>
+        </div>
+        <MyButton class='ghost-round full-width' @click="auth">{{ formName }}</MyButton>
+        <slot></slot>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -36,7 +44,148 @@ export default {
 </script>
 
 <style scoped>
-  .btn_form {
-    margin-top: 15px;
+  body,
+  html {
+    margin: 0;
+    height: 100%;
+  }
+
+  input {
+    border: none;
+  }
+
+  input::placeholder {
+    color: #fff;
+  }
+
+  button:focus {
+    outline: none;
+  }
+
+  .input-line:focus {
+    outline: none;
+    border-color: #fff;
+    -webkit-transition: all .2s ease;
+    transition: all .2s ease;
+  }
+
+  .ghost-round {
+    cursor: pointer;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 25px;
+    color: rgba(255, 255, 255, 0.65);
+    -webkit-align-self: flex-end;
+    -ms-flex-item-align: end;
+    align-self: flex-end;
+    font-size: 19px;
+    font-size: 1.2rem;
+    font-family: roboto;
+    font-weight: 300;
+    line-height: 2.5em;
+    margin-top: 40px;
+    margin-bottom: 25px;
+    -webkit-transition: all .2s ease;
+    transition: all .2s ease;
+  }
+
+  .ghost-round:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    -webkit-transition: all .2s ease;
+    transition: all .2s ease;
+  }
+
+  .input-line {
+    background: none;
+    margin-bottom: 10px;
+    line-height: 2.4em;
+    color: #fff;
+    font-family: roboto;
+    font-weight: 300;
+    letter-spacing: 0px;
+    letter-spacing: 0.02rem;
+    font-size: 19px;
+    font-size: 1.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.65);
+    -webkit-transition: all .2s ease;
+    transition: all .2s ease;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .input-fields {
+    margin-top: 25px;
+  }
+
+  .content {
+    padding-left: 25px;
+    padding-right: 25px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-flow: column;
+    -ms-flex-flow: column;
+    flex-flow: column;
+    z-index: 5;
+  }
+
+  .welcome {
+    font-weight: 200;
+    margin-top: 75px;
+    text-align: center;
+    font-size: 40px;
+    font-size: 2.5rem;
+    letter-spacing: 0px;
+    letter-spacing: 0.05rem;
+  }
+
+  .window {
+    z-index: 100;
+    color: #fff;
+    font-family: roboto;
+    position: absolute;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-flow: column;
+    -ms-flex-flow: column;
+    flex-flow: column;
+    box-shadow: 0px 15px 50px 10px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    height: 560px;
+    width: 360px;
+    background: #fff;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+  }
+
+  .overlay {
+    background: -webkit-linear-gradient(#008080, #006081);
+    background: linear-gradient(#008080, #006081);
+    opacity: 0.85;
+    filter: alpha(opacity=85);
+    height: 560px;
+    position: absolute;
+    width: 360px;
+    z-index: 1;
+  }
+
+  @media (max-width: 500px) {
+    .window {
+      width: 100%;
+      height: 100%;
+    }
+    .overlay {
+      width: 100%;
+      height: 100%;
+    }
   }
 </style>

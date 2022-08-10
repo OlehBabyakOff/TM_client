@@ -1,54 +1,58 @@
 <template>
-  <div v-if="loaded">
-    <MyAlert v-if="showAlert"
-             :message="message"
-             :status="status"
-             @closeAlert="closeAlert"/>
+  <div v-if="$store.state.isAuth && $store.state.user">
+    <div v-if="loaded">
+      <MyAlert v-if="showAlert"
+               :message="message"
+               :status="status"
+               @closeAlert="closeAlert"/>
 
-    <div class="card">
-      <div class="container">
-        <h4><b>Full name:</b> {{fullName}}</h4>
-        <p><b>Email: </b> {{user.email}}</p>
-        <p><b>Phone number: </b> {{user.phoneNumber}}</p>
-        <MyButton @click="openUser">Edit user</MyButton>
-        <MyButton class="btn_list"><router-link to="/" style="color: teal">Back</router-link></MyButton>
+      <div class="card">
+        <div class="container">
+          <h4><b>Full name:</b> {{fullName}}</h4>
+          <p><b>Email: </b> {{user.email}}</p>
+          <p><b>Phone number: </b> {{user.phoneNumber}}</p>
+          <MyButton @click="openUser">Edit user</MyButton>
+          <MyButton class="btn_list"><router-link to="/" style="color: teal">Back</router-link></MyButton>
+        </div>
       </div>
+
+      <div class="list">
+        <MyInput v-model="search"
+                 placeholder="Search by title..."/>
+        <MySelect v-model="sort"
+                  :options="sortOptions"/>
+      </div>
+
+      <EventList :events="sortAndSearch"
+                 @deleteEvent="deleteEvent"/>
+
+      <div class="list">
+        <MyButton @click="openEvent">Create Event</MyButton>
+      </div>
+
+      <MyPagination :totalPages="totalPages"
+                    :currentPage="currentPage"
+                    @changePage="changePage"/>
+
+      <MyModal v-if="showModal"
+               @hideModal="closeModal">
+        <UserForm v-if="showUserForm"
+                  text="Edit user"
+                  :user="user"
+                  @saveUser="editUser"/>
+        <EventForm v-else-if="showEventForm"
+                   text="Add event"
+                   @saveEvent="addEvent"/>
+
+      </MyModal>
     </div>
-
-    <div class="list">
-      <MyInput v-model="search"
-               placeholder="Search by title..."/>
-      <MySelect v-model="sort"
-                :options="sortOptions"/>
-    </div>
-
-    <EventList :events="sortAndSearch"
-               @deleteEvent="deleteEvent"/>
-
-    <div class="list">
-      <MyButton @click="openEvent">Create Event</MyButton>
-    </div>
-
-    <div class="pagination">
-      <MyButton :class="this.currentPage === page ? 'current' : null"
-                v-for="page in totalPages"
-                :key="page"
-                @click="changePage(page)">{{page}}</MyButton>
-    </div>
-
-    <MyModal v-if="showModal"
-             @hideModal="closeModal">
-      <UserForm v-if="showUserForm"
-                text="Edit user"
-                :user="user"
-                @saveUser="editUser"/>
-      <EventForm v-else-if="showEventForm"
-                 text="Add event"
-                 @saveEvent="addEvent"/>
-
-    </MyModal>
+    <MySpinner v-else/>
   </div>
-  <MySpinner v-else/>
+  <MyInfo v-else text="You must be logged in to access this page!">
+    <MyButton>
+      <router-link style="color: teal" to="/login">back to login page</router-link>
+    </MyButton>
+  </MyInfo>
 </template>
 
 <script>
@@ -165,11 +169,6 @@ export default {
       this.getEvents();
     }
   },
-  beforeCreate() {
-    if (this.$store.state.isAuth != true) {
-      this.$router.push('/login');
-    }
-  },
   mounted() {
     this.getUser();
     this.getEvents();
@@ -210,18 +209,6 @@ export default {
   }
   .btn_list {
     margin: 0 15px;
-  }
-  .pagination {
-    display: inline-block;
-  }
-  .current {
-    color: black;
-  }
-  .pagination a {
-    color: black;
-    float: left;
-    padding: 8px 16px;
-    text-decoration: none;
   }
   .list {
     display: flex;

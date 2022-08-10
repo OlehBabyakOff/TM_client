@@ -1,16 +1,16 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../pages/Home.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import Home from '../pages/Home.vue';
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home
+    component: Home,
   },
   {
     path: '/user/:id',
     name: 'user page',
-    component: () => import('@/pages/UserInfo.vue')
+    component: () => import('@/pages/UserInfo.vue'),
   },
   {
     path: '/registration',
@@ -22,6 +22,12 @@ const routes = [
     name: 'login',
     component: () => import('@/pages/Login.vue')
   },
+  { path: '/404',
+    component: () => import('@/pages/NotFound.vue')
+  },
+  { path: '/:pathMatch(.*)',
+    redirect: '/404'
+  },
 ]
 
 const router = createRouter({
@@ -29,4 +35,4 @@ const router = createRouter({
   routes
 });
 
-export default router
+export default router;

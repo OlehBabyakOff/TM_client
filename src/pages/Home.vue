@@ -1,38 +1,42 @@
 <template>
-  <div v-if="loaded">
-    <MyAlert v-if="showAlert"
-             :message="message"
-             :status="status"
-             @closeAlert="closeAlert"/>
+  <div v-if="$store.state.isAuth && $store.state.user">
+    <div v-if="loaded">
+      <MyAlert v-if="showAlert"
+               :message="message"
+               :status="status"
+               @closeAlert="closeAlert"/>
 
-    <div class="list">
-      <MyInput v-model="search"
-               placeholder="Search by name..."/>
-      <MySelect v-model="sort"
-                :options="sortOptions"/>
+      <div class="list">
+        <MyInput v-model="search"
+                 placeholder="Search by name..."/>
+        <MySelect v-model="sort"
+                  :options="sortOptions"/>
+      </div>
+
+      <UserItem :users="sortAndSearch"
+                @deleteUser="deleteUser"/>
+
+      <div class="list">
+        <MyButton @click="openModal">Create User</MyButton>
+      </div>
+
+      <MyPagination :totalPages="totalPages"
+                    :currentPage="currentPage"
+                    @changePage="changePage"/>
+
+      <MyModal v-if="showModal"
+               @hideModal="closeModal">
+        <UserForm text="Add to database"
+                  @saveUser="saveUser"/>
+      </MyModal>
     </div>
-
-    <UserItem :users="sortAndSearch"
-              @deleteUser="deleteUser"/>
-
-    <div class="list">
-      <MyButton @click="openModal">Create User</MyButton>
-    </div>
-
-    <div class="pagination">
-      <MyButton :class="this.currentPage === page ? 'current' : null"
-                v-for="page in totalPages"
-                :key="page"
-                @click="changePage(page)">{{page}}</MyButton>
-    </div>
-
-    <MyModal v-if="showModal"
-             @hideModal="closeModal">
-      <UserForm text="Add to database"
-                @saveUser="saveUser"/>
-    </MyModal>
+    <MySpinner v-else/>
   </div>
-  <MySpinner v-else/>
+  <MyInfo v-else text="You must be logged in to access this page!">
+    <MyButton>
+      <router-link style="color: teal" to="/login">back to login page</router-link>
+    </MyButton>
+  </MyInfo>
 </template>
 
 <script>
@@ -118,11 +122,6 @@ export default {
       this.fillTable();
     }
   },
-  beforeCreate() {
-    if (this.$store.state.isAuth != true) {
-      this.$router.push('/login');
-    }
-  },
   mounted() {
     this.fillTable();
   },
@@ -144,21 +143,9 @@ export default {
 </script>
 
 <style scoped>
-  .pagination {
-    display: inline-block;
-  }
-  .current {
-    color: black;
-  }
-  .pagination a {
-    color: black;
-    float: left;
-    padding: 8px 16px;
-    text-decoration: none;
-  }
-  .list {
-    display: flex;
-    justify-content: space-between;
-    margin: 15px 0;
-  }
+.list {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+}
 </style>
