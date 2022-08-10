@@ -26,6 +26,7 @@ export default {
       password: ''
     }
   },
+  emits: ['auth'],
   props: {
     formName: String
   },

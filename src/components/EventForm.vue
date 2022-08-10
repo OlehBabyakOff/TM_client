@@ -27,6 +27,7 @@ export default {
       endDate: '',
     }
   },
+  emits: ['saveEvent'],
   methods: {
     saveEvent() {
       this.$emit('saveEvent', this.title, this.description, this.startDate, this.endDate);

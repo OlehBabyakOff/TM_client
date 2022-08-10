@@ -24,7 +24,7 @@
     </tr>
     </tbody>
   </MDBTable>
-  <h1 v-else>Empty table</h1>
+  <h1 v-else style="text-align: center">Empty table</h1>
 </template>
 
 <script>
@@ -39,6 +39,7 @@ export default {
   props: {
     users: Array,
   },
+  emits: ['deleteUser'],
   methods: {
     deleteUser(id) {
       this.$emit('deleteUser', id);

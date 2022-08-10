@@ -105,6 +105,16 @@ export default {
     closeAlert() {
       this.showAlert = false;
     },
+    fillEventsResponse(events, totalPages, currentPage) {
+      this.events = events;
+      this.totalPages = totalPages;
+      this.currentPage = currentPage;
+    },
+    fillAlert(message, status, showAlert) {
+      this.message = message;
+      this.status = status;
+      this.showAlert = showAlert;
+    },
     async getUser() {
       const id = this.$route.params.id;
       const fetchedUser = await getUserService(`user/${id}`);
@@ -114,23 +124,17 @@ export default {
     async getEvents() {
       const id = this.$route.params.id;
       const fetchedEvents = await getEventsService(`${id}/events?page=${this.currentPage}&limit=${this.limit}`);
-      this.events = fetchedEvents.data.events;
-      this.totalPages = fetchedEvents.data.total;
-      this.currentPage = fetchedEvents.data.current;
+      this.fillEventsResponse(fetchedEvents.data.events, fetchedEvents.data.total, fetchedEvents.data.current);
     },
     editUser(firstName, lastName, email, phoneNumber) {
       this.closeModal();
       updateUserService(`user/${this.user._id}`, {firstName, lastName, email, phoneNumber})
           .then(response => {
             this.getUser();
-            this.message = response.data.message;
-            this.status = response.status;
-            this.showAlert = true;
+            this.fillAlert(response.data.message, response.status, true);
           })
           .catch(error => {
-            this.message = error.response.data;
-            this.status = error.response.status;
-            this.showAlert = true;
+            this.fillAlert(error.response.data, error.response.status, true);
           });
     },
     addEvent(title, description, startDate, endDate) {
@@ -139,14 +143,10 @@ export default {
       addEventService(`${id}/event`, {title, description, startDate, endDate})
           .then(response => {
             this.getEvents();
-            this.message = response.data.message;
-            this.status = response.status;
-            this.showAlert = true;
+            this.fillAlert(response.data.message, response.status, true);
           })
           .catch(error => {
-            this.message = error.response.data;
-            this.status = error.response.status;
-            this.showAlert = true;
+            this.fillAlert(error.response.data, error.response.status, true);
           });
     },
     deleteEvent(eventId) {
@@ -154,14 +154,10 @@ export default {
       deleteEventService(`${userId}/event/${eventId}`)
           .then(response => {
             this.getEvents();
-            this.message = response.data.message;
-            this.status = response.status;
-            this.showAlert = true;
+            this.fillAlert(response.data.message, response.status, true);
           })
           .catch(error => {
-            this.message = error.response.data;
-            this.status = error.response.status;
-            this.showAlert = true;
+            this.fillAlert(error.response.data, error.response.status, true);
           });
     },
     changePage(page) {

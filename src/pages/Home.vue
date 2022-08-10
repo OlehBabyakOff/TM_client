@@ -79,12 +79,20 @@ export default {
     closeAlert() {
       this.showAlert = false;
     },
+    fillUserResponse(users, totalPages, currentPage) {
+      this.users = users;
+      this.totalPages = totalPages;
+      this.currentPage = currentPage;
+    },
+    fillAlert(message, status, showAlert) {
+      this.message = message;
+      this.status = status;
+      this.showAlert = showAlert;
+    },
     fillTable() {
       getUsersService(`users?page=${this.currentPage}&limit=${this.limit}`)
           .then(response => {
-            this.users = response.data.users;
-            this.totalPages = response.data.total;
-            this.currentPage = response.data.current;
+            this.fillUserResponse(response.data.users, response.data.total, response.data.current);
             this.loaded = true;
           });
     },
@@ -92,29 +100,21 @@ export default {
       this.closeModal();
       saveUserService('user', {firstName, lastName, email, phoneNumber})
           .then(response => {
-            this.message = response.data.message;
-            this.status = response.status;
-            this.showAlert = true;
+            this.fillAlert(response.data.message, response.status, true);
             this.fillTable();
           })
           .catch(error => {
-            this.message = error.response.data;
-            this.status = error.response.status;
-            this.showAlert = true;
+            this.fillAlert(error.response.data, error.response.status, true);
           });
     },
     deleteUser(id) {
       deleteUserService(`user/${id}`)
           .then(response => {
-            this.message = response.data.message;
-            this.status = response.status;
-            this.showAlert = true;
+            this.fillAlert(response.data.message, response.status, true);
             this.fillTable();
           })
           .catch(error => {
-            this.message = error.response.data;
-            this.status = error.response.status;
-            this.showAlert = true;
+            this.fillAlert(error.response.data, error.response.status, true);
           });
     },
     changePage(page) {

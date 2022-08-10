@@ -38,18 +38,19 @@ export default {
     ...mapActions({
       signIn: 'signIn'
     }),
+    fillAlert(message, status, showAlert) {
+      this.message = message;
+      this.status = status;
+      this.showAlert = showAlert;
+    },
     login(email, password) {
       this.signIn({email, password})
           .then(response => {
-            this.message = response.data.message;
-            this.status = response.status;
-            this.showAlert = true;
             this.$router.push('/');
+            this.fillAlert(response.data.message, response.status, true);
           })
           .catch(error => {
-            this.message = error.response.data;
-            this.status = error.response.status;
-            this.showAlert = true;
+            this.fillAlert(error.response.data, error.response.status, true);
           });
     },
     closeAlert() {

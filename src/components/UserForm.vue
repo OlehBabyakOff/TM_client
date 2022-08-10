@@ -22,6 +22,7 @@ export default {
       phoneNumber: '',
     }
   },
+  emits: ['saveUser'],
   methods: {
     saveUser() {
       this.$emit('saveUser', this.firstName, this.lastName, this.email, this.phoneNumber);

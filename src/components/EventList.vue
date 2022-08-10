@@ -21,7 +21,7 @@
     </tr>
     </tbody>
   </MDBTable>
-  <h1 v-else>Empty table</h1>
+  <h1 v-else style="text-align: center">Empty table</h1>
 </template>
 
 <script>
@@ -32,6 +32,7 @@
     props: {
       events: Array
     },
+    emits: ['deleteEvent'],
     methods: {
       deleteEvent(eventId) {
         this.$emit('deleteEvent', eventId);

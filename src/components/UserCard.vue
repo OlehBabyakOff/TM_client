@@ -18,6 +18,7 @@
       loaded: Boolean,
       showModal: Boolean
     },
+    emits: ['setModal'],
     methods: {
       openModal() {
         this.$emit('setModal', true);
